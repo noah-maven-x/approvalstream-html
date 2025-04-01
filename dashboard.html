@@ -330,7 +330,7 @@
             document.querySelector('.forms-section').style.display = 'none';
             
             setTimeout(() => {
-                window.location.href = './login.html';
+                window.location.href = './login';
             }, 3000);
         }
 
@@ -348,11 +348,11 @@
                     throw new Error(data.error || 'Sign out failed');
                 }
 
-                window.location.href = './login.html';
+                window.location.href = './login';
 
             } catch (error) {
                 console.error('Sign out failed:', error);
-                window.location.href = './login.html';
+                window.location.href = './login';
             }
         }
 
