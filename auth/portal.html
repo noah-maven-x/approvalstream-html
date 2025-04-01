@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal - ApprovalStream</title>
+    <style>
+        :root {
+            --primary-color: #39BAD8;
+            --secondary-color: #CC68E3;
+            --text-color: #333333;
+            --background-color: #f8f9fa;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: #666666;
+            margin: 0 0 0 8px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+
+        .sign-out-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .sign-out-btn:hover {
+            background-color: #c82333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h2 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-section p {
+            color: #666666;
+            font-size: 1.1rem;
+        }
+
+        .forms-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .form-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .form-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .disable-button {
+            padding: 0.5rem 1rem;
+            background-color: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .disable-button:hover {
+            background-color: #c82333;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .form-content {
+            padding: 1.5rem;
+        }
+
+        .form-description {
+            color: #666666;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .form-url {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .form-url input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .copy-button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #2ea3c0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div>
+                <div>ApprovalStream</div>
+                <div>by MANÜ Telehealth</div>
+            </div>
+        </div>
+        <div class="user-menu">
+            <span id="userName" class="user-name"></span>
+            <button onclick="signOut()" class="sign-out-btn">Sign Out</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="welcome-section">
+            <h2>Welcome to Your Portal</h2>
+            <p>Enable the forms you want to use and get your unique QR codes and links for each form.</p>
+        </section>
+
+        <section class="forms-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">Zepbound Inquiry Form</h3>
+                    <div class="form-controls">
+                        <button id="disableZepbound" class="disable-button" style="display: none;">Disable Form</button>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="zepboundToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-content" id="zepboundContent">
+                    <div class="form-description">
+                        Allow patients to submit insurance information for Zepbound prior authorization.
+                    </div>
+                    <div class="qr-code">
+                        <img id="zepboundQR" src="" alt="Zepbound Form QR Code">
+                    </div>
+                    <div class="form-url">
+                        <input type="text" id="zepboundURL" readonly>
+                        <button class="copy-button" onclick="copyToClipboard('zepboundURL')">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more form cards here as needed -->
+        </section>
+    </div>
+
+    <script>
+        // Global variables
+        let practiceId = null;
+
+        // Map form types to their corresponding element IDs
+        const formTypeMap = {
+            'Zepbound Inquiry': 'zepbound'
+        };
+
+        // Check authentication status
+        async function checkAuth() {
+            try {
+                const token = new URLSearchParams(window.location.search).get('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return null;
+                }
+
+                const response = await fetch(`/api/practice?token=${encodeURIComponent(token)}`);
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        // Function to fetch practice data
+        async function fetchPracticeData() {
+            try {
+                const data = await checkAuth();
+                if (!data) return;
+
+                // Store practice ID
+                practiceId = data.id;
+                
+                // Display the user's name from Primary Contact First Name
+                const userNameElement = document.getElementById('userName');
+                userNameElement.textContent = data['Primary Contact First Name'] || 'Practice';
+
+                // Fetch and set form states
+                await fetchFormStates();
+            } catch (error) {
+                console.error('Error fetching practice data:', error);
+            }
+        }
+
+        // Function to fetch form states
+        async function fetchFormStates() {
+            try {
+                const token = new URLSearchParams(window.location.search).get('token');
+                const response = await fetch(`/api/forms?token=${encodeURIComponent(token)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch form states');
+                }
+
+                const forms = await response.json();
+                forms.forEach(form => {
+                    const formId = formTypeMap[form.type];
+                    if (formId) {
+                        const toggle = document.getElementById(`${formId}Toggle`);
+                        const content = document.getElementById(`${formId}Content`);
+                        const disableButton = document.getElementById(`disable${formId.charAt(0).toUpperCase() + formId.slice(1)}`);
+                        const qrCode = document.getElementById(`${formId}QR`);
+                        const urlInput = document.getElementById(`${formId}URL`);
+
+                        if (toggle) {
+                            toggle.checked = form.isEnabled;
+                            toggle.addEventListener('change', () => toggleForm(form.type, toggle.checked));
+                        }
+
+                        if (content) {
+                            content.style.display = form.isEnabled ? 'block' : 'none';
+                        }
+
+                        if (disableButton) {
+                            disableButton.style.display = form.isEnabled ? 'block' : 'none';
+                            disableButton.addEventListener('click', () => toggleForm(form.type, false));
+                        }
+
+                        if (qrCode && form.qrCode) {
+                            qrCode.src = form.qrCode;
+                        }
+
+                        if (urlInput && form.url) {
+                            urlInput.value = form.url;
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching form states:', error);
+            }
+        }
+
+        // Function to toggle form
+        async function toggleForm(formType, enabled) {
+            try {
+                const token = new URLSearchParams(window.location.search).get('token');
+                const response = await fetch('/api/forms/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        formType,
+                        enabled,
+                        token
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to toggle form');
+                }
+
+                const result = await response.json();
+                const formId = formTypeMap[formType];
+                const content = document.getElementById(`${formId}Content`);
+                const disableButton = document.getElementById(`disable${formId.charAt(0).toUpperCase() + formId.slice(1)}`);
+                const qrCode = document.getElementById(`${formId}QR`);
+                const urlInput = document.getElementById(`${formId}URL`);
+
+                if (content) {
+                    content.style.display = enabled ? 'block' : 'none';
+                }
+
+                if (disableButton) {
+                    disableButton.style.display = enabled ? 'block' : 'none';
+                }
+
+                if (qrCode && result.qrCode) {
+                    qrCode.src = result.qrCode;
+                }
+
+                if (urlInput && result.url) {
+                    urlInput.value = result.url;
+                }
+            } catch (error) {
+                console.error('Error toggling form:', error);
+                alert('Failed to toggle form. Please try again.');
+            }
+        }
+
+        // Function to copy to clipboard
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.select();
+                document.execCommand('copy');
+                alert('Copied to clipboard!');
+            }
+        }
+
+        // Function to sign out
+        function signOut() {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize the page
+        fetchPracticeData();
+    </script>
+</body>
+</html> 

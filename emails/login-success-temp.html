@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your ApprovalStream Login Link</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #39BAD6;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        .content {
+            background-color: #f9fafb;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #39BAD6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">ApprovalStream</div>
+        <div class="subtitle">by MANÜ Telehealth</div>
+    </div>
+
+    <div class="content">
+        <h2>Your Login Link is Ready</h2>
+        <p>Hello,</p>
+        <p>We've received your request to access ApprovalStream. Click the button below to log in to your dashboard:</p>
+        
+        <div style="text-align: center;">
+            <a href="{{loginLink}}" class="button">Log In to Dashboard</a>
+        </div>
+
+        <div class="warning">
+            <strong>Important:</strong> This login link will expire after 30 minutes and can only be used once. If you need a new link, simply request another one from the login page.
+        </div>
+
+        <p>If you didn't request this login link, please ignore this email or contact support if you have concerns.</p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated message from ApprovalStream. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

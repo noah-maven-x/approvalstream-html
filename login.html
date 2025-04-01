@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ApprovalStream</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <style>
+        body {
+            font-family: Inter, system-ui, sans-serif;
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            font-family: Plus Jakarta Sans, system-ui, sans-serif;
+            font-weight: 600;
+            background: linear-gradient(135deg, #39BAD8 0%, #CC68E3 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtext {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-family: Plus Jakarta Sans, system-ui, sans-serif;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-input:focus {
+            border-color: #39BAD8;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(to right, #39BAD8, #CC68E3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9375rem;
+            margin-top: 2rem;
+        }
+
+        .back-link:hover {
+            color: #39BAD8;
+        }
+
+        .error-message {
+            display: none;
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        #turnstile-container {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            min-height: 65px; /* Reserve space for Turnstile */
+        }
+
+        #turnstileError {
+            display: none;
+            text-align: center;
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            display: none;
+            background-color: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .success-message h2 {
+            color: #15803d;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .success-message p {
+            color: #166534;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+
+        .validation-message {
+            color: #475569;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            text-align: center;
+            padding: 0.75rem;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .validation-message strong {
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center">
+            <div class="logo">ApprovalStream</div>
+            <div class="subtext">by MANÜ Telehealth</div>
+        </div>
+
+        <div class="form-container">
+            <h1 class="form-title">Login to Your Portal</h1>
+            
+            <form id="loginForm">
+                <div id="formFields">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" required
+                            class="form-input"
+                            placeholder="Enter your email">
+                        <div id="emailError" class="error-message">Please enter a valid email address</div>
+                    </div>
+
+                    <!-- Cloudflare Turnstile -->
+                    <div id="turnstile-container"></div>
+                    <input type="hidden" id="cf-turnstile-response" name="cf-turnstile-response">
+                    <div id="turnstileError" class="error-message">Please complete the security check</div>
+
+                    <div id="validationMessage" class="validation-message">
+                        <strong>Before signing in:</strong><br>
+                        1. Enter your email address<br>
+                        2. Complete the security check below
+                    </div>
+
+                    <div id="errorMessage" class="error-message">Login failed. Please try again.</div>
+
+                    <button type="submit" id="submitButton" class="submit-button" disabled>
+                        <span>Sign in</span>
+                        <div class="loading-spinner"></div>
+                    </button>
+                </div>
+
+                <div id="successMessage" class="success-message">
+                    <h2>Check Your Email</h2>
+                    <p>We've sent a secure login link to your email address. Click the link to access your portal.</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: #166534;">The link will expire in 30 minutes.</p>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center">
+            <a href="/" class="back-link">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        // Turnstile configuration
+        const isProduction = window.location.hostname === 'approvalstream.com';
+        const turnstileSiteKey = isProduction 
+            ? '0x4AAAAAABCm97-B-L9pqdDu' // Production site key
+            : '1x00000000000000000000AA';  // Test site key
+
+        // Make.com webhook URLs
+        const MAKE_LOGIN_WEBHOOK = 'https://hook.us1.make.com/ov622f9dr89a4m9i7qh7whk406o013hl';
+
+        // Initialize form state
+        let isSubmitting = false;
+        const emailInput = document.getElementById('email');
+        const submitButton = document.getElementById('submitButton');
+        const loginForm = document.getElementById('loginForm');
+        const emailError = document.getElementById('emailError');
+        const turnstileError = document.getElementById('turnstileError');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Function to validate email
+        function isValidEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        // Function to update submit button state
+        function updateSubmitButtonState() {
+            const email = emailInput.value;
+            const turnstileResponse = document.getElementById('cf-turnstile-response').value;
+            
+            const emailValid = isValidEmail(email);
+            const turnstileValid = !!turnstileResponse;
+            
+            // Update error messages
+            emailError.classList.toggle('hidden', emailValid || !email);
+            turnstileError.classList.toggle('hidden', turnstileValid);
+            
+            // Update button state
+            submitButton.disabled = !emailValid || !turnstileValid;
+
+            // Show/hide validation message with specific instructions
+            const validationMessage = document.getElementById('validationMessage');
+            if (emailValid && turnstileValid) {
+                validationMessage.style.display = 'none';
+            } else {
+                let message = '<strong>Please complete the following:</strong><br>';
+                if (!email) {
+                    message += '1. Enter your email address<br>';
+                } else if (!emailValid) {
+                    message += '1. Enter a valid email address<br>';
+                }
+                if (!turnstileValid) {
+                    message += '2. Complete the security check below';
+                }
+                validationMessage.innerHTML = message;
+                validationMessage.style.display = 'block';
+            }
+        }
+
+        // Function to initialize Turnstile
+        function initializeTurnstile() {
+            if (window.turnstile) {
+                window.turnstile.render('#turnstile-container', {
+                    sitekey: turnstileSiteKey,
+                    theme: 'light',
+                    callback: function(token) {
+                        document.getElementById('cf-turnstile-response').value = token;
+                        updateSubmitButtonState();
+                    },
+                    'expired-callback': function() {
+                        document.getElementById('cf-turnstile-response').value = '';
+                        updateSubmitButtonState();
+                    }
+                });
+            } else {
+                setTimeout(initializeTurnstile, 100);
+            }
+        }
+
+        // Initialize everything when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            updateSubmitButtonState();
+            errorMessage.classList.add('hidden');
+            initializeTurnstile();
+        });
+
+        // Add email input listener
+        emailInput.addEventListener('input', updateSubmitButtonState);
+
+        // Function to handle form submission
+        async function handleSubmit(token) {
+            try {
+                const email = document.getElementById('email').value;
+                const response = await fetch(`${MAKE_LOGIN_WEBHOOK}?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+
+                // Hide form fields and show success message
+                document.getElementById('formFields').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('errorMessage').classList.remove('hidden');
+                if (window.turnstile) {
+                    window.turnstile.reset();
+                }
+            }
+        }
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (isSubmitting) return;
+
+            const email = emailInput.value;
+            const turnstileResponse = document.getElementById('cf-turnstile-response').value;
+
+            // Validate email
+            if (!isValidEmail(email)) {
+                emailError.classList.remove('hidden');
+                return;
+            }
+
+            if (!turnstileResponse) {
+                turnstileError.classList.remove('hidden');
+                return;
+            }
+
+            isSubmitting = true;
+            const buttonText = submitButton.querySelector('span');
+            const loadingSpinner = submitButton.querySelector('.loading-spinner');
+
+            // Show loading state
+            submitButton.disabled = true;
+            buttonText.textContent = 'Sending...';
+            loadingSpinner.classList.remove('hidden');
+
+            try {
+                await handleSubmit(turnstileResponse);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').classList.remove('hidden');
+            } finally {
+                if (!document.getElementById('successMessage').style.display === 'block') {
+                    // Only reset if we haven't shown success message
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Sign in';
+                    loadingSpinner.classList.add('hidden');
+                    isSubmitting = false;
+                    
+                    if (window.turnstile) {
+                        window.turnstile.reset();
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
