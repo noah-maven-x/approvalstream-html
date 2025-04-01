@@ -25,13 +25,6 @@
             background: white;
             padding: 1rem 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -39,9 +32,7 @@
 
         .logo {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            min-width: 200px;
         }
 
         .logo h1 {
@@ -51,22 +42,18 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-align: center;
         }
 
         .logo p {
             font-size: 12px;
             color: #666666;
-            margin: 4px 0 0 0;
-            text-align: center;
+            margin: 0 0 0 8px;
         }
 
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 2rem;
-            min-width: 200px;
-            justify-content: flex-end;
+            gap: 1rem;
         }
 
         .user-name {
@@ -91,8 +78,18 @@
 
         .container {
             max-width: 800px;
-            margin: 2rem auto 0;
+            margin: 0 auto;
             padding: 0 1rem;
+        }
+
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .welcome-section {
@@ -100,7 +97,7 @@
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin: 2rem 0;
+            margin-bottom: 2rem;
         }
 
         .welcome-section h2 {
@@ -252,7 +249,7 @@
         }
 
         .error-message {
-            background-color: #fff3f3;
+            background-color: #fef2f3;
             border: 1px solid var(--error-color);
             color: var(--error-color);
             padding: 1rem;
@@ -264,7 +261,49 @@
         .error-message.show {
             display: block;
         }
+        
     </style>
+</head>
+<body class="font-sans bg-secondary-50">
+    <header class="bg-white border-b border-secondary-100">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>ApprovalStream</h1>
+                <p>by MANÜ Telehealth</p>
+            </div>
+            <div class="user-menu">
+                <span class="user-name" id="userName"></span>
+                <button onclick="signOut()" class="sign-out-btn">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="error-message"></div>
+        <section class="welcome-section">
+            <h2>Welcome to Your ApprovalStream Portal</h2>
+            <p>Get your unique QR codes and links for each form.</p>
+        </section>
+
+        <section class="forms-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">Zepbound Inquiry Form</h3>
+                </div>
+                <p class="form-description">Allow patients to submit insurance information for Zepbound prior authorization.</p>
+                <div class="form-content active" id="zepboundContent">
+                    <div class="qr-code">
+                        <img id="zepboundQR" src="" alt="Zepbound Form QR Code">
+                    </div>
+                    <div class="form-url">
+                        <input type="text" id="zepboundURL" readonly>
+                        <button onclick="copyToClipboard('zepboundURL')" class="copy-button">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <script>
         // Function to get URL parameters
         function getUrlParameter(name) {
@@ -277,10 +316,7 @@
         // Function to check authentication
         async function checkAuth() {
             const token = getUrlParameter('token');
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'error-message';
-            document.querySelector('.container').prepend(errorMessage);
-
+            
             if (!token) {
                 showError('No authentication token provided. Please log in again.');
                 return;
@@ -321,20 +357,37 @@
 
         // Function to show error and redirect
         function showError(message) {
-            const errorMessage = document.querySelector('.error-message');
+            const container = document.querySelector('.container');
+            if (!container) {
+                console.error('Container element not found');
+                window.location.href = './login.html';
+                return;
+            }
+
+            // Get or create error message element
+            let errorMessage = document.querySelector('.error-message');
+            if (!errorMessage) {
+                errorMessage = document.createElement('div');
+                errorMessage.className = 'error-message';
+                container.prepend(errorMessage);
+            }
+            
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
             
             // Hide the main content sections
-            document.querySelector('.welcome-section').style.display = 'none';
-            document.querySelector('.forms-section').style.display = 'none';
+            const welcomeSection = document.querySelector('.welcome-section');
+            const formsSection = document.querySelector('.forms-section');
+            
+            if (welcomeSection) welcomeSection.style.display = 'none';
+            if (formsSection) formsSection.style.display = 'none';
             
             setTimeout(() => {
-                window.location.href = './login';
+                window.location.href = './login.html';
             }, 3000);
         }
 
-        // Updated sign out function
+        // Function to sign out
         async function signOut() {
             const token = getUrlParameter('token');
             try {
@@ -348,15 +401,15 @@
                     throw new Error(data.error || 'Sign out failed');
                 }
 
-                window.location.href = './login';
+                window.location.href = './login.html';
 
             } catch (error) {
                 console.error('Sign out failed:', error);
-                window.location.href = './login';
+                window.location.href = './login.html';
             }
         }
 
-        // Function to copy URL to clipboard with feedback
+        // Function to copy URL to clipboard
         function copyToClipboard(elementId) {
             const input = document.getElementById(elementId);
             input.select();
@@ -369,47 +422,8 @@
             }, 2000);
         }
 
-        // Initialize when page loads
-        window.onload = checkAuth;
+        // Initialize when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', checkAuth);
     </script>
-</head>
-<body>
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">
-                <h1>ApprovalStream</h1>
-                <p>by MANÜ Telehealth</p>
-            </div>
-            <div class="user-menu">
-                <span class="user-name" id="userName"></span>
-                <button onclick="signOut()" class="sign-out-btn">Sign Out</button>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <section class="welcome-section">
-            <h2>Welcome to Your ApprovalStream Portal</h2>
-            <p>Get your unique QR codes and links for each form.</p>
-        </section>
-
-        <section class="forms-section">
-            <div class="form-card">
-                <div class="form-header">
-                    <h3 class="form-title">Zepbound Inquiry Form</h3>
-                </div>
-                <p class="form-description">Allow patients to submit insurance information for Zepbound prior authorization.</p>
-                <div class="form-content active" id="zepboundContent">
-                    <div class="qr-code">
-                        <img id="zepboundQR" src="" alt="Zepbound Form QR Code">
-                    </div>
-                    <div class="form-url">
-                        <input type="text" id="zepboundURL" readonly>
-                        <button onclick="copyToClipboard('zepboundURL')" class="copy-button">Copy</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
 </body>
 </html> 
